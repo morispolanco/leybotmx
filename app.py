@@ -1,45 +1,44 @@
-import streamlit as st
 import requests
 import json
+import streamlit as st
 
-def call_respell_api(pregunta, estado):
-    api_key = "260cee54-6d54-48ba-92e8-bf641b5f4805"
-    spell_id = "AMS1u_FAWQea7sxE6Ffu6"
-    # spell_version_id = "sU33jCqGk0-RJKDxeiWif"  # Uncomment this line if you want to use a specific version
+# Replace the API key with your own
+api_key = "260cee54-6d54-48ba-92e8-bf641b5f4805"
 
-    data = {
-        "spellId": spell_id,
-        "inputs": {
-            "pregunta": pregunta,
-            "estado": estado,
-        }
-    }
+# Replace the spellId with the unique identifier of the spell you want to run
+spell_id = "AMS1u_FAWQea7sxE6Ffu6"
 
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-    }
+# Replace the spellVersionId with the unique identifier of the spell version you want to run
+spell_version_id = "sU33jCqGk0-RJKDxeiWif"
 
-    response = requests.post(
-        "https://api.respell.ai/v1/run",
-        headers=headers,
-        data=json.dumps(data),
-    )
+# Replace the inputs with the values you want to input into the spell
+inputs = {
+   "pregunta": "Example text",
+   "estado": "Example text"
+}
 
-    if response.status_code == 200:
-        result = json.loads(response.content)
-        return result["output"]
-    else:
-        st.write(f"Error: {response.status_code}")
-        return None
+# Create a form in Streamlit to input the spell parameters
+form = st.form("Spell Runner Form")
+pregunta = form.text_input("Pregunta", inputs["pregunta"])
+estado = form.text_input("Estado", inputs["estado"])
 
-st.title("Respell API Streamlit App")
+# Make a POST request to the API with the required parameters
+response = requests.post(
+   "https://api.respell.ai/v1/run",
+   headers={
+       "Authorization": f"Bearer {api_key}",
+       "Accept": "application/json",
+       "Content-Type": "application/json"
+   },
+   data=json.dumps({
+       "spellId": spell_id,
+       "spellVersionId": spell_version_id,
+       "inputs": {
+           "pregunta": pregunta,
+           "estado": estado
+       }
+   })
+)
 
-pregunta = st.text_input("Pregunta:")
-estado = st.text_input("Estado:")
-
-if st.button("Predicción"):
-    result = call_respell_api(pregunta, estado)
-    if result is not None:
-        st.write(f"Resultado: {result}")
+# Print the response from the API
+print(response.json())
