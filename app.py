@@ -1,53 +1,36 @@
-import React from 'react';
-import { useState } from 'react-redux';
-import { fetch } from 'vercel';
+import streamlit as st
+import requests
+import json
 
-const App = () => {
-  const [state, setState] = useState({
-    spellId: 'ams1u_FAWQea7sxE6Ffu6',
-    spellVersionId: 'sU33jCqGk0-RJKDxeiWif',
-    inputs: {
-      pregunta: 'Example text',
-    estado: 'Example text',
-    },
-  });
+# Titular la ventana principal de la app
+st.title("Ejemplo de app de Streamlit")
 
-  const [error, setError] = useState(null);
+# Crear un campo de texto para que el usuario pueda ingresar la pregunta
+pregunta = st.text_input("Ingrese la pregunta:", "")
 
-  useEffect(() => {
-    fetch('https://api.respell.ai/v1/run', {
-      method: 'POST',
-      headers: {
-        // This is your API key
-        authorization: 'Bearer 260cee54-6d54-48ba-92e8-bf641b5f4805',
-        'Accept': 'application/json',
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        spellId: 'ams1u_FAWQea7sxE6Ffu6',
-        // This field can be omitted to run the latest published version
-        spellVersionId: 'sU33jCqGk0-RJKDxeiWif',
-        inputs: {
-          pregunta: 'Example text',
-        estado: 'Example text',
-        },
-      }),
-    })
-      .then(response => response.json())
-      .then(data => {
-        setState({ spellId, spellVersionId, inputs });
-      })
-      .catch(error => setError(error));
-  }, []);
+# Crear un campo de texto para que el usuario pueda ingresar el estado de la spell
+estado = st.text_input("Ingrese el estado:", "")
 
-  return (
-    <div>
-      <h1>Vercel App</h1>
-      <form onSubmit={handleSubmit}>
-        <label for="pregunta">pregunta:</label>
-        <input type="text" id="pregunta" name="pregunta" onChange={(e) => setState({ pregunta: e.target.value })} />
-        <label for="estado">estado:</label>
-        <input type="text" id="estado" name="estado" onChange={(e) => setState({estado: e.target.value })} />
-        <label for="inputs">Inputs:</label>
-        <input type="text" id="inputs" name="inputs" onChange={(e) => setState({ inputs: data })} />
-       
+# Utilizar las funciones requests y json para enviar la solicitud HTTP a la API de Respell AI
+response = requests.post("https://api.respell.ai/v1/run", headers={
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Accept": "application/json",
+    "Content-Type": "application/json"
+}, data=json.dumps({
+    "spellId": "AMS1u_FAWQea7sxE6Ffu6",
+    "spellVersionId": "sU33jCqGk0-RJKDxeiWif",
+    "inputs": {
+        "pregunta": pregunta,
+        "estado": estado
+    }
+}))
+
+# Procesar la respuesta de la API
+if response.status_code == 200:
+    # Extraer la respuesta del modelo de la API
+    respuesta_modelo = json.loads(response.text)["output"]["completion"]
+    
+    # Mostrar la respuesta del modelo en la ventana principal de la app
+    st.write(respuesta_modelo)
+else:
+    st.write("Error running spell:", response.text)
