@@ -31,9 +31,6 @@ with st.form("my_form"):
             }),
         )
 
-        # Convert the response to a Python dictionary
-        response_dict = response.json()
-
-        # Print the value of the key 'respuesta'
-        st.write("Respuesta:")
-        st.write(response_dict['respuesta'])
+        # Print the response
+        st.write("Response:")
+        st.write(response.json())
