@@ -31,6 +31,9 @@ with st.form("my_form"):
             }),
         )
 
-        # Print the response
-        st.write("Response:")
-        st.markdown(f"```json\n{json.dumps(response.json(), indent=4)}\n```")
+        # Extract the answer from the response
+        answer = response.json()["answer"]
+
+        # Display the answer
+        st.write("Answer:")
+        st.write(answer)
