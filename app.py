@@ -2,35 +2,44 @@ import streamlit as st
 import requests
 import json
 
-# Titular la ventana principal de la app
-st.title("Ejemplo de app de Streamlit")
+def call_respell_api(pregunta, estado):
+    api_key = "260cee54-6d54-48ba-92e8-bf641b5f4805"
+    spell_id = "AMS1u_FAWQea7sxE6Ffu6"
+    # spell_version_id = "sU33jCqGk0-RJKDxeiWif"  # Uncomment this line if you want to use a specific version
 
-# Crear un campo de texto para que el usuario pueda ingresar la pregunta
-pregunta = st.text_input("Ingrese la pregunta:", "")
-
-# Crear un campo de texto para que el usuario pueda ingresar el estado de la spell
-estado = st.text_input("Ingrese el estado:", "")
-
-# Utilizar las funciones requests y json para enviar la solicitud HTTP a la API de Respell AI
-response = requests.post("https://api.respell.ai/v1/run", headers={
-    "Authorization": "Bearer YOUR_API_KEY",
-    "Accept": "application/json",
-    "Content-Type": "application/json"
-}, data=json.dumps({
-    "spellId": "AMS1u_FAWQea7sxE6Ffu6",
-    "spellVersionId": "sU33jCqGk0-RJKDxeiWif",
-    "inputs": {
-        "pregunta": pregunta,
-        "estado": estado
+    data = {
+        "spellId": spell_id,
+        "inputs": {
+            "pregunta": pregunta,
+            "estado": estado,
+        }
     }
-}))
 
-# Procesar la respuesta de la API
-if response.status_code == 200:
-    # Extraer la respuesta del modelo de la API
-    respuesta_modelo = json.loads(response.text)["output"]["completion"]
-    
-    # Mostrar la respuesta del modelo en la ventana principal de la app
-    st.write(respuesta_modelo)
-else:
-    st.write("Error running spell:", response.text)
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(
+        "https://api.respell.ai/v1/run",
+        headers=headers,
+        data=json.dumps(data),
+    )
+
+    if response.status_code == 200:
+        result = json.loads(response.content)
+        return result["output"]
+    else:
+        st.write(f"Error: {response.status_code}")
+        return None
+
+st.title("Respell API Streamlit App")
+
+pregunta = st.text_input("Pregunta:")
+estado = st.text_input("Estado:")
+
+if st.button("Predicción"):
+    result = call_respell_api(pregunta, estado)
+    if result is not None:
+        st.write(f"Resultado: {result}")
