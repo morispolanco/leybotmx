@@ -31,8 +31,12 @@ with st.form("my_form"):
             }),
         )
 
+        # Convert the response to a Python dictionary
+        response_dict = response.json()
+
         # Extract the answer from the response
-        answer = response.json()["answer"]
+        # Replace "answer" with the actual key in the response JSON object that contains the answer
+        answer = response_dict["answer"]
 
         # Display the answer
         st.write("Answer:")
