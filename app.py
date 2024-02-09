@@ -34,10 +34,6 @@ with st.form("my_form"):
         # Convert the response to a Python dictionary
         response_dict = response.json()
 
-        # Hide some keys
-        response_dict.pop('key1', None)  # replace 'key1' with the actual key you want to hide
-        response_dict.pop('key2', None)  # replace 'key2' with the actual key you want to hide
-
-        # Display the response
-        st.write("Response:")
-        st.json(response_dict)
+        # Print the value of the key 'respuesta'
+        st.write("Respuesta:")
+        st.write(response_dict['respuesta'])
