@@ -33,4 +33,4 @@ with st.form("my_form"):
 
         # Print the response
         st.write("Response:")
-        st.write(response.json())
+        st.markdown(f"```json\n{json.dumps(response.json(), indent=4)}\n```")
