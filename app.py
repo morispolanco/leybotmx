@@ -1,47 +1,42 @@
+import streamlit as st
 import requests
 import json
-import streamlit as st
 
-# Replace the API key with your own
-api_key = "260cee54-6d54-48ba-92e8-bf641b5f4805"
+def main():
+    st.title("Chatbot con Respell.ai")
 
-# Replace the spellId with the unique identifier of the spell you want to run
-spell_id = "AMS1u_FAWQea7sxE6Ffu6"
+    # Obtiene la entrada del usuario
+    pregunta = st.text_input("Ingrese su pregunta:")
 
-# Replace the spellVersionId with the unique identifier of the spell version you want to run
-spell_version_id = "sU33jCqGk0-RJKDxeiWif"
+    if st.button("Enviar"):
+        # Llama a la API de Respell.ai
+        response = llamar_api(pregunta)
+        
+        # Muestra la respuesta de la API
+        if response.status_code == 200:
+            data = response.json()
+            st.success("Respuesta del Chatbot: {}".format(data['response']))
+        else:
+            st.error("Error al llamar a la API. Código de estado: {}".format(response.status_code))
 
-# Replace the inputs with the values you want to input into the spell
-inputs = {
-   "pregunta": "Example text",
-   "estado": "Example text"
-}
+def llamar_api(pregunta):
+    # Llamada a la API de Respell.ai
+    url = "https://api.respell.ai/v1/run"
+    headers = {
+        "Authorization": "Bearer 260cee54-6d54-48ba-92e8-bf641b5f4805",
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "spellId": "1th5Ic7ZnMmZXBtZCfR7-",
+        "inputs": {
+            "pregunta": pregunta
+        }
+    }
 
-# Create a form in Streamlit to input the spell parameters
-form = st.form("Spell Runner Form")
-pregunta = form.text_input("Pregunta", inputs["pregunta"])
-estado = form.text_input("Estado", inputs["estado"])
+    response = requests.post(url, headers=headers, data=json.dumps(payload))
 
-# Add a submit button to the form
-form.add_button("Run Spell")
+    return response
 
-# Make a POST request to the API with the required parameters
-response = requests.post(
-   "https://api.respell.ai/v1/run",
-   headers={
-       "Authorization": f"Bearer {api_key}",
-       "Accept": "application/json",
-       "Content-Type": "application/json"
-   },
-   data=json.dumps({
-       "spellId": spell_id,
-       "spellVersionId": spell_version_id,
-       "inputs": {
-           "pregunta": pregunta,
-           "estado": estado
-       }
-   })
-)
-
-# Print the response from the API
-print(response.json())
+if __name__ == "__main__":
+    main()
