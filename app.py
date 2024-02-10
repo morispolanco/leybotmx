@@ -15,7 +15,10 @@ def main():
         # Muestra la respuesta de la API
         if response.status_code == 200:
             data = response.json()
-            st.success("Respuesta del Chatbot: {}".format(data['response']))
+            if 'response' in data:
+                st.success("Respuesta del Chatbot: {}".format(data['response']))
+            else:
+                st.error("Error: No se encontró respuesta del Chatbot en la API.")
         else:
             st.error("Error al llamar a la API. Código de estado: {}".format(response.status_code))
 
